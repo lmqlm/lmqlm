@@ -1,0 +1,258 @@
+$(function () {
+
+    //let tag = $('.tag').find('a'),
+    //    tagIndex = 0;
+
+    //tag.on('click', function () {
+    //    tagIndex = $(this).parent().index();
+    //    $('.box').eq(tagIndex).css({ "display": "block" }).siblings().css({ "display": "none" });
+    //    $(this).addClass('current').parent().siblings().find('a').removeClass();
+    //    // return false;
+    //});
+
+    
+
+    //$(".close").on("click", function () {
+    //    $(".hideShow").stop().slideToggle(400);
+    //    return false;
+    //});
+    var bannerTimer;
+    let slideLeft = $(".slideLeft"),
+        slideRight = $(".slideRight"),
+        slideMove = $(".slideMove"),
+        pager = $(".pager"),
+        len = slideMove.find("a").length - 1,
+        speed = 1000,
+        index = 0,
+        isClick = true;
+
+    for (let i = 0; i <= len; i++) {
+        pager.append('<li></li>');
+    };
+
+    pager.find('li').eq(index).addClass('current');
+
+    pager.find("li").on("click", function () {
+        index = $(this).index();
+        $(this).addClass("current").siblings().removeClass();
+        slideMove
+            .find("a")
+            .eq(index)
+            .stop()
+            .fadeIn(800)
+            .siblings()
+            .stop()
+            .fadeOut(800);
+    });
+
+    function clearBannerTimer() {
+        clearInterval(bannerTimer);
+    }
+
+    function startBannerTimer() {
+        if (bannerTimer != undefined) {
+            clearInterval(bannerTimer);
+        }
+        bannerTimer = setInterval(function () {
+            slideRight.click();
+        }, 3000);
+    }
+
+
+    $(".slideMove").hover(
+        function () {
+            clearBannerTimer();
+        },
+        function () {
+            startBannerTimer();
+        }
+    );
+
+    //For無障礙 當tab指到banner時要停指輪播
+    $(".slideMove").find("a").focus(
+        function () {
+            clearBannerTimer();
+        },
+    );
+
+    $(".slideMove").find("a").blur(
+        function () {
+            startBannerTimer();
+        }
+    );
+
+    startBannerTimer();
+
+
+    slideRight.on("click", function () {
+        if (index < len) {
+            index++;
+        } else {
+            index = 0;
+        }
+        pager.find("li").eq(index).addClass("current").siblings().removeClass();
+        slideMove
+            .find("a")
+            .eq(index)
+            .stop()
+            .fadeIn(800)
+            .siblings()
+            .stop()
+            .fadeOut(800);
+        //重新計算切換的時間
+        startBannerTimer();
+    });
+
+    slideLeft.on("click", function () {
+        if (index > 0) {
+            index--;
+        } else {
+            index = len;
+        }
+        pager.find("li").eq(index).addClass("current").siblings().removeClass();
+        slideMove
+            .find("a")
+            .eq(index)
+            .stop()
+            .fadeIn(800)
+            .siblings()
+            .stop()
+            .fadeOut(800);
+
+        //重新計算切換的時間
+        startBannerTimer();
+    });
+
+    let fadeBg = $('.fadeBg').find('div'),
+        fadeIndex = 0;
+
+    setInterval(function () {
+        if (fadeIndex < 2) {
+            fadeIndex++;
+        } else {
+            fadeIndex = 0;
+        };
+
+        fadeBg.eq(fadeIndex).stop().animate({
+            opacity: 1
+        }, speed * 2).siblings().stop().animate({
+            opacity: 0
+        }, speed * 2)
+    }, 5000);
+
+    $('.menuBtn').on('click', function () {
+        $('.mobileNav').toggleClass('mobileNavShow');
+    });
+
+    let leftVideo = $('.leftVideo'),
+        rightVideo = $('.rightVideo'),
+        moveVideo = $('.moveVideo'),
+        videoPager = $('.videoPager'),
+        videoLen = $('.videoTwo').length - 1,
+        videoIndex = 0,
+        isVideoClick = true;
+
+    for (let i = 0; i <= videoLen; i++) {
+        videoPager.append('<li></li>');
+    };
+
+    videoPager.find('li').eq(index).addClass('current');
+
+    videoPager.find('li').on('click', function () {
+        if (isVideoClick === true) {
+            isVideoClick = false;
+            videoIndex = $(this).index();
+            $(this).addClass('current').siblings().removeClass();
+            moveVideo.stop().animate({
+                left: videoIndex * (-1) * 100 + '%'
+            }, speed, function () {
+                isVideoClick = true;
+            });
+        };
+    });
+
+    rightVideo.on('click', function () {
+        if (isVideoClick === true) {
+            isVideoClick = false;
+            if (videoIndex < videoLen) {
+                videoIndex++;
+            } else {
+                videoIndex = 0;
+            };
+            videoPager.find('li').eq(videoIndex).addClass('current').siblings().removeClass();
+            moveVideo.stop().animate({
+                left: videoIndex * (-1) * 100 + '%'
+            }, speed, function () {
+                isVideoClick = true;
+            });
+        };
+        return false;
+    });
+
+    leftVideo.on('click', function () {
+        if (isVideoClick === true) {
+            isVideoClick = false;
+            if (videoIndex > 0) {
+                videoIndex--;
+            } else {
+                videoIndex = videoLen;
+            };
+            videoPager.find('li').eq(videoIndex).addClass('current').siblings().removeClass();
+            moveVideo.stop().animate({
+                left: videoIndex * (-1) * 100 + '%'
+            }, speed, function () {
+                isVideoClick = true;
+            });
+        };
+        return false;
+    });
+
+    let isHover = 0;
+
+
+    // $('.hasSecond').find('a').on('focus', function () {
+    //     if ($(window).width() > 768) {
+    //         // $('.hasSecond').find('ul').removeClass('showList');
+    //         $(this).siblings('ul').toggleClass('showList');
+    //         // return false;
+    //     };
+    // }).on('blur',function (){
+    //     $(this).siblings('ul').toggleClass('showList');
+    // });
+
+    //$('.hasSecond').find('a').on('click', function () {
+    //    $('body').off();
+    //});
+
+    //離開Menu時，自動關閉上層選單
+    $('*').not(".slideBtn,.pager li.hasSecond,.hasSecond a,.slideBtn").on('focus', function () {
+            $('.hasSecond').find('ul').removeClass('showList');
+    });
+
+   
+
+
+    $('.hasSecond').find('a').on('click', function () {
+        $('body').off();
+        //拿掉尺寸判斷 避免手機板無法開啟第三層選單
+        //if ($(window).width() > 768) {
+        let $this = $(this);
+        $this.parents('.hasSecond').siblings().find('ul').removeClass('showList');
+        $this.parents('.hasSecond').find('ul').addClass('showList');
+        //return false;
+        //};
+    });
+
+    $('.hasSecond2').find('a').on('click', function () {
+        //拿掉尺寸判斷 避免手機板無法開啟第三層選單
+        //if ($(window).width() > 768) {
+            let $this = $(this);
+            $(this).siblings('ul').addClass('showList').parent().siblings('.hasSecond2').find('ul').removeClass('showList')
+            //return false;
+        //};
+    });
+
+
+
+
+});
